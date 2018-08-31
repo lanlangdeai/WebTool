@@ -8,7 +8,7 @@ namespace WebTool;
 class FileTool
 {
 	// 验证文件是否存在
-	public function checkExist($file)
+	public static function checkExist($file)
 	{
 		return file_exists($file);
 	}
