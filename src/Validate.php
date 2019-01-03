@@ -89,12 +89,31 @@ class Validate
 		return count($array,1) === count($array);
 	}
 
-	// -------------------------   数组验证   ------------------------
+	// -------------------------   字符串验证   ------------------------
 	
 	// 是否存在中文字符
 	static function isExistChinese($char)
 	{
-		return preg_match("/[\x{4e00}-\x{9fa5}]+/u",$char);
+		return preg_match("/[\x{4e00}-\x{9fa5}]+/u",$char); // /([\x81-\xfe][\x40-\xfe])/
+	}
+
+	// -------------------------   文件验证   ------------------------
+
+	// 文件是否存在(远程+本地)
+	static function isExistFile($file)
+	{
+		if($file){
+			if(stripos($file,'http') === 0){
+				$header = get_headers($file,1);
+				return isset($header[0]) && ( strpos($header[0],'200') || strpos($header[0],'304') ) && stripos($header[0],'OK');
+			}else{
+				if( self::isExistChinese($file) ){
+					$file = iconv('UTF-8', 'GBK', $file);
+				}
+				return file_exists($file);
+			}
+		}
+		return false;
 	}
 
 }
