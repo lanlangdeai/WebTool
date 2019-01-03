@@ -7,11 +7,7 @@ namespace WebTool;
  */
 class Arr
 {
-	// 是否是多维数组(验证)
-	static function isMultidimensionalArray(Array $array)
-	{
-		return count($array,1) === count($array);
-	}
 
-	
+
+
 }

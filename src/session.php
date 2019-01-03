@@ -8,18 +8,7 @@ namespace WebTool;
  */
 class Session
 {
-	// session是否启用(验证)
-	static function isActived()
-	{
-		if( !Common::isCli() ){
-			if( version_compare(phpversion(), '5.4.0', '>=') ){
-				return session_status() === PHP_SESSION_ACTIVE;
-			}else{
-				return !empty( session_id() );
-			}
-		}
-		return false;
-	}
+
 
 	// 激活session
 	static function doActive()
