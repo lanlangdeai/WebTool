@@ -36,5 +36,27 @@ class File
         return array_key_exists($code, $map) ? $map[$code] : 'unknow';
     }
 
+    // 计算目录文件大小
+    static function dirSize($dir)
+    {
+        $size = 0;
+        foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)) as $file){
+            $size += $file->getSize();
+        }
+        return $size;
+    }
+
+    /**
+     * 读取文件某行内容
+     * @param  string $file        文件名称
+     * @param  integer $lineNumber 行号
+     * @return string              指定行内容
+     */
+    static function readFileLine($file,$lineNumber)
+    {
+        $fileObj = new SplFileObject($file);
+        $fileObj->seek($lineNumber);
+        return $fileObj->current();
+    }
 
 }
