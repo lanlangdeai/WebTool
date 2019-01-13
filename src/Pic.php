@@ -2,6 +2,8 @@
 namespace WebTool;
 /**
  * 图片相关操作
+ * X-Wolf
+ * 2019-1-12
  */
 class Pic
 {

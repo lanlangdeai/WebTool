@@ -1,6 +1,5 @@
 <?php
 namespace WebTool;
-
 /**
  * session相关操作
  * X-Wolf

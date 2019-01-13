@@ -20,7 +20,7 @@ class Arr
 		return array_map(['Arr','objectToArray'],$object);
 	}
 
-	//数组总和(支持多维)
+	//计算数组总和(支持多维)
 	static function arraySum(array $array)
 	{
 		$total = 0;

@@ -2,6 +2,8 @@
 namespace WebTool;
 /**
  * 数据验证
+ * X-Wolf
+ * 2019-1-12
  */
 class Validate
 {
@@ -97,6 +99,32 @@ class Validate
 		return preg_match("/[\x{4e00}-\x{9fa5}]+/u",$char); // /([\x81-\xfe][\x40-\xfe])/
 	}
 
+    // 字符串非法字符检测
+    static function illegalCharacters($strOrArr)
+    {
+        $IllegalArr = [
+        	'"','\'','\\','\/','&','||','%','*','(',')',
+        	'select','update','delete','insert','create','modify',
+        ];
+        if(is_array($strOrArr)){
+            foreach($strOrArr as $str){
+                foreach($IllegalArr as $char){
+                    if(strpos(strtolower($str), $char) !== false){
+                        return false;
+                    }
+                }
+            }
+        }else{
+            foreach($IllegalArr as $char){
+                if(strpos(strtolower($strOrArr), $char) !== false){
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    } 
+
 	// -------------------------   文件验证   ------------------------
 
 	// 文件是否存在(远程+本地)
@@ -115,5 +143,128 @@ class Validate
 		}
 		return false;
 	}
+
+	// -------------------------   内容验证   ------------------------
+	
+	// 验证身份证号
+    public static function isCreditNo($vStr)
+    {
+        $vCity = array(
+            '11','12','13','14','15','21','22',
+            '23','31','32','33','34','35','36',
+            '37','41','42','43','44','45','46',
+            '50','51','52','53','54','61','62',
+            '63','64','65','71','81','82','91'
+        );
+     
+        if (!preg_match('/^([\d]{17}[xX\d]|[\d]{15})$/', $vStr)) return false;
+     
+        if (!in_array(substr($vStr, 0, 2), $vCity)) return false;
+     
+        $vStr = preg_replace('/[xX]$/i', 'a', $vStr);
+        $vLength = strlen($vStr);
+     
+        if ($vLength == 18)
+        {
+            $vBirthday = substr($vStr, 6, 4) . '-' . substr($vStr, 10, 2) . '-' . substr($vStr, 12, 2);
+        } else {
+            $vBirthday = '19' . substr($vStr, 6, 2) . '-' . substr($vStr, 8, 2) . '-' . substr($vStr, 10, 2);
+        }
+     
+        if (date('Y-m-d', strtotime($vBirthday)) != $vBirthday) return false;
+        if ($vLength == 18)
+        {
+            $vSum = 0;
+     
+            for ($i = 17 ; $i >= 0 ; $i--)
+            {
+                $vSubStr = substr($vStr, 17 - $i, 1);
+                $vSum += (pow(2, $i) % 11) * (($vSubStr == 'a') ? 10 : intval($vSubStr , 11));
+            }
+     
+            if($vSum % 11 != 1) return false;
+        }
+     
+        return true;
+    } 
+
+    // 验证ip地址
+    public static function ip( $str ) 
+    {
+        if ( empty( $str ) )
+            return false;
+
+        if ( ! preg_match( '#^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$#', $str ) ) {
+            return false;
+        }
+
+        $ip_array = explode( '.', $str );
+
+        //真实的ip地址每个数字不能大于255（0-255）
+        return ( $ip_array[0] <= 255 && $ip_array[1] <= 255 && $ip_array[2] <= 255 && $ip_array[3] <= 255 ) ? true : false;
+    }
+
+    /**
+     * 参数验证(仅类型)
+     * @param array      $para 		数据
+     * @param array      $standard 	参数要求
+     * @return boolen
+     * 使用:
+     * 		Validate::verifyParams($data,[
+                'REQUIRED' => [
+                    'username'    => 'string',
+                ],
+                'OPTIONAL' => [
+                    'ip'          => 'string',
+                ],
+            ]);
+     */
+    public static function verifyParams($para, $standard)
+    {
+        if ($para === false || empty($para)) {
+            return false;
+        }
+
+        foreach ($standard['REQUIRED'] as $k => $v) {
+            if (!array_key_exists($k, $para)) {
+                return false;
+            }
+            if(empty($para[$k])){
+                return false;
+            }
+
+            if ('string' == $v) {
+                if (false === is_string($para[$k])) {
+                    return false;
+                }
+            } else if ('int' == $v) {
+                if ((string)((int)($para[$k])) != $para[$k]) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+
+        foreach ($standard['OPTIONAL'] as $k => $v) {
+            if (!array_key_exists($k, $para)) {
+                continue;
+            }
+
+            if ('string' == $v) {
+                if (!empty($para[$k]) && false === is_string($para[$k])) {
+                    return false;
+                }
+            } else if ('int' == $v) {
+                if (!empty($para[$k]) && (string)((int)($para[$k])) != $para[$k]) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
 }
