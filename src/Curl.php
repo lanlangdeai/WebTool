@@ -8,10 +8,10 @@ namespace WebTool;
  */
 class Curl
 {
-	private $ch = null; 
+	private static $ch = null; 
 
 	// 默认配置
-	private $default = [
+	const DEFAULT_OPTION = [
 		CURLOPT_HEADER 			=> false,
         CURLOPT_RETURNTRANSFER 	=> true,
         CURLOPT_TIMEOUT			=> 10,
@@ -30,7 +30,7 @@ class Curl
 	{
 		$methods = ['post','get'];
 		if( in_array($method,$methods,true) ){
-			$methodName = __METHOD__ . ucfirst($method);
+			$methodName = 'http' . ucfirst($method);
 			return self::$methodName($url,$data,$params);
 		}
 		return '请求方式暂不支持:' . $method;
@@ -51,7 +51,7 @@ class Curl
 			$params[CURLOPT_POSTFIELDS] = is_array($data) ? http_build_query($data) : $data;
 		}
 		
-		$options = array_merge($this->default,$params);
+		$options = self::mergeOption(self::DEFAULT_OPTION,$params);
 		return self::response($options);
 	}
 
@@ -65,31 +65,44 @@ class Curl
 	static function httpGet($url,$data,$params=[])
 	{
 		self::init();
-
-		$url .= (strpos($url, '?') === false ? '?' : '&') . http_build_query($params);
-		$params[CURLOPT_URL] = $curl;
-		$options = array_merge($this->default,$params);
+		$url .= (strpos($url, '?') === false ? '?' : '&') . http_build_query($data);
+		$params[CURLOPT_URL] = $url;
+		$options = self::mergeOption(self::DEFAULT_OPTION,$params);
 		return self::response($options);
 	}
 
 	// 初始化
 	private static function init()
 	{
-		$this->ch = curl_init();
+		self::$ch = curl_init();
 	}
 
 	// 响应
 	private static function response($options)
 	{
-		curl_setopt_array($this->ch,$options);
-		$result   = curl_exec($this->ch);
-		$httpCode = curl_getinfo($this->ch,CURLINFO_HTTP_CODE);
-		$errno    = curl_errno($this->ch);
+		curl_setopt_array(self::$ch,$options);
+		$result   = curl_exec(self::$ch);
+		$httpCode = curl_getinfo(self::$ch,CURLINFO_HTTP_CODE);
+		$errno    = curl_errno(self::$ch);
 		if($errno || $httpCode < 200 || $httpCode >= 300){
-			return [null,$errno,curl_error($this->ch),$httpCode];
+			$error = curl_error(self::$ch);
+			curl_close(self::$ch);
+			return [null,$errno,$error,$httpCode];
 
 		}
+		curl_close(self::$ch);
 		return [$result,null];
 	}
 
+	// 合并选项
+	private static function mergeOption($defaultConfig,$customConfig)
+	{
+		foreach($defaultConfig as $num => $config){
+			if( array_key_exists($num, $customConfig) ){
+				$defaultConfig[$num] = $customConfig[$num];
+				unset($customConfig[$num]);
+			}
+		}
+		return $defaultConfig + $customConfig;
+	}
 }
