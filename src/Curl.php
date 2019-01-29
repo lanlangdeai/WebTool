@@ -2,7 +2,7 @@
 namespace WebTool;
 
 /**
- * CURL相关操作
+ * CURL相关操作(基本curl操作 + 重试机制)
  * X-Wolf
  * 2019-1-27		
  */
@@ -67,6 +67,33 @@ class Curl
 		self::init();
 		$url .= (strpos($url, '?') === false ? '?' : '&') . http_build_query($data);
 		$params[CURLOPT_URL] = $url;
+		$options = self::mergeOption(self::DEFAULT_OPTION,$params);
+		return self::response($options);
+	}
+
+	/**
+	 * 文件上传
+	 * @param  string $url      请求地址
+	 * @param  string $filepath 上传文件路径
+	 * @param  array  $data     数据
+	 * @param  array  $params   参数
+	 */
+	static function httpUpload($url,$filepath,$data,$params=[])
+	{
+		self::init();
+		$params[CURLOPT_URL]  = $url;
+		$params[CURLOPT_POST] = true;
+		if( class_exists('\CURLFile') ){
+			$params[CURLOPT_SAFE_UPLOAD] = true;
+			$content = ['file'=> new \CURLFile(realpath($filepath) )];
+		}else{
+			if( defined('CURLOPT_SAFE_UPLOAD') ){
+				$params[CURLOPT_SAFE_UPLOAD] = false;
+			}
+			$content = ['file'=> '@' . realpath($filepath)];
+		}
+
+		$params[CURLOPT_POSTFIELDS] = $content;	
 		$options = self::mergeOption(self::DEFAULT_OPTION,$params);
 		return self::response($options);
 	}
