@@ -30,4 +30,13 @@ class Arr
 		return $total;
 	}
 
+	// 将多维数组转化成一维数组
+	static function reduceArray($array) {
+	    $return = [];
+	    array_walk_recursive($array, function ($x) use (&$return) {
+	        $return[] = $x;
+	    });
+	    return $return;
+	}
+
 }
