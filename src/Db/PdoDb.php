@@ -1,10 +1,10 @@
 <?php
-namespace WebTool\Db;
+namespace WebTool\DB;
 
 /**
  * 有关PDO操作
  */
-class PdoDb
+class PdoDB
 {
 
 }

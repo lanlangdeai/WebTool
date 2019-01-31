@@ -39,4 +39,24 @@ class Arr
 	    return $return;
 	}
 
+	/**
+	 * 生成一定数量的不重复随机数
+	 * @param  integer $min 最小值
+	 * @param  integer $max 最大值
+	 * @param  integer $num 随机数数量
+	 * @return array        返回值
+	 */
+	static function generateUniqueRand($min,$max,$num)
+	{
+		$count = 0;
+	    $return = [];
+	    while ($count < $num) {
+	        $return[] = mt_rand($min, $max);
+	        $return   = array_flip(array_flip($return));
+	        $count    = count($return);
+	    }
+	    shuffle($return);
+	    return $return;
+	}
+
 }
