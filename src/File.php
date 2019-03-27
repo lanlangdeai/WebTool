@@ -59,4 +59,25 @@ class File
         return $fileObj->current();
     }
 
+    /**
+     * 验证文件的存在性(本地+远程)
+     * @param  string $file 文件路径
+     * @return bool         是否存在
+     */
+    function checkFileExist($file)
+    {
+        if($file){
+            if(stripos($file,'http') === 0){
+                $header = get_headers($file,1);
+                return isset($header[0]) && ( strpos($header[0],'200') || strpos($header[0],'304') ) && stripos($header[0],'OK');
+            }else{
+                if( existChinese($file) ){
+                    $file = iconv('UTF-8', 'GBK', $file);
+                }
+                return file_exists($file);
+            }
+        }
+        return false;
+    }
+
 }

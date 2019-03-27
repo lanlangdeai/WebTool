@@ -63,4 +63,32 @@ class Data
 
 		fclose($output);
 	}
+
+	/**
+     * 参数验证,过滤并获取有用数据
+     * @param  array $data      原数据
+     * @param  array $standard  保留的参数
+     */
+    function filterData($data,$standard){
+        if(empty($data) || !is_array($data) || !is_array($standard)) return false;
+    
+        $standardArr = array_fill_keys($standard, '');
+
+        $data = array_intersect_key($data,$standardArr);
+        
+        return array_merge($standardArr,$data);
+    }
+
+    /**
+     * 浮点数求和（如果是减 就把参数前加 - 号）
+     * @param array ...$params(5.6以上写法)
+     * @return mixed 保留两位小数
+     */
+    function add(...$params) {
+        return array_reduce($params,function($base,$n){
+            $base = bcadd($base,+$n,2);
+            return $base;
+        });
+    }
+
 }
