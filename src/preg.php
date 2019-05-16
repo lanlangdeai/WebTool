@@ -10,8 +10,8 @@ class Preg
 	// 获取子域名
 	static function subDomain(string $domain):string
 	{
-		$res = preg_match('/(.*\.)?\w+\.\w+$/', $domain, $matches);
-		return isset($res[1]) ? trim($res[1],'.') : '';
+		preg_match('/(.*\.)?\w+\.\w+$/', $domain, $matches);
+		return isset($matches[1]) ? trim($matches[1],'.') : '';
 	}
 }
 
