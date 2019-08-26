@@ -7,7 +7,12 @@ namespace WebTool;
  */
 class Coding
 {
-
+	/**
+     * 加密
+     * @param  string  $str    需加密字符串
+     * @param  integer $factor 分类
+     * @return string          加密之后的字符串
+     */
     static function  doEncode($str , $factor = 0){
         $len = strlen($str);
         if(!$len){
@@ -28,6 +33,11 @@ class Coding
         return self::base64URLEncode($ret);
     }
 
+    /**
+     * 解密
+     * @param  string $str 需解密字符串
+     * @return string      解密之后的字符串
+     */
     static function doDecode($str)
     {  
         if($str == ''){

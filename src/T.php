@@ -37,7 +37,7 @@ class T
         if($isZero){
             $today = strtotime('today');
             $interval = abs($timestamp - $today);
-            if( !is_int($interval/\lib\Status::DAY) ){
+            if( !is_int($interval/(24*60*60) ) ){
                 return false;
             }
         }
