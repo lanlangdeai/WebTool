@@ -43,4 +43,12 @@ class String
 	    }
 	}
 
+	/**
+	 * 生成唯一标识 
+	 */
+	static function generateUniqueId()
+	{
+		return md5(uniqid(md5(microtime(true)),true));
+	}
+
 }
